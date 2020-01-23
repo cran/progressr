@@ -1,0 +1,332 @@
+Package: progressr
+==================
+
+Version: 0.4.0 [2020-01-22]
+
+SIGNIFICANT CHANGES:
+
+ * All progression handler function have been renamed from <name>_handler()
+   to handler_<name>() to make it easier to use autocompletion on them.
+
+
+Version: 0.3.0 [2020-01-20]
+
+NEW FEATURES:
+
+ * progressor() gained arguments 'offset' and 'scale', and 'transform'.
+
+ * handlers() gained argument 'append' to make it easier to append handlers.
+ 
+BUG FIXES:
+
+ * A progression condition with amount = 0 would not update the message.
+
+ 
+Version: 0.2.1 [2020-01-04]
+
+BUG FIXES:
+
+ * winprogressbar_handler() would produce error "invalid 'Label' argument".
+
+ * handlers() did not return a list if the 'default' handler was returned.
+ 
+
+Version: 0.2.0 [2020-01-04]
+
+SIGNIFICANT CHANGES:
+
+ * Renamed  withProgress2() to withProgressShiny().
+
+NEW FEATURES:
+
+ * handlers() gained argument 'default' specifying a progression handler to
+   be returned if none is set.
+
+
+Version: 0.1.5 [2019-10-26]
+
+NEW FEATURES:
+
+ * Add withProgress2(), which is a plug-in backward compatibily replacement
+   for shiny::withProgress() wrapped in progressr::with_progress() where the
+   the "shiny" progression handler is by default added to the list of
+   progression handlers used.
+
+ * Add demo("mandelbrot", package = "progressr").
+
+BUG FIXES:
+
+ * Package could set '.Random.seed' to NULL, instead of removing it, which in
+   turn would produce a warning on "'.Random.seed' is not an integer vector but
+   of type 'NULL', so ignored" when the next random number generated.
+
+
+Version: 0.1.4 [2019-07-02]
+
+NEW FEATURES:
+
+ * Add support for progressor(along = ...).
+ 
+
+Version: 0.1.3 [2019-07-01]
+
+NEW FEATURES:
+
+ * Now it is possible to send "I'm still here" progression updates by setting
+   the progress step to zero, e.g. progress(amount = 0).  This type of
+   information can for instance be used to updated a progress bar spinner.
+
+ * Add utility function handlers() for controlling option 'progressr.handlers'.
+ 
+ * Progression handlers' internal state now has a sticky 'message' field,
+   which hold the most recent, non-empty progression 'message' received.
+
+
+Version: 0.1.2 [2019-06-14]
+
+NEW FEATURES:
+
+ * with_progress() gained arguments 'enable' and 'interval' as an alternative
+   to setting corresponding options progressr.*.
+
+ * Now option 'progressr.interval' defaults to 0.0 (was 0.5 seconds).
+
+ * Added print() for 'progression_handler' objects.
+ 
+BUG FIXES:
+
+ * with_progress(..., delay_conditions = "condition"), introduced in v0.1.0,
+   would also capture conditions produced by progression handlers, e.g.
+   progress::progress_bar() output would not be displayed until the very end.
+
+
+Version: 0.1.1 [2019-06-08]
+
+NEW FEATURES:
+
+ * with_progress() now captures standard output and conditions and relay them
+   at then end.  This is done in order to avoid interweaving such output with
+   the output produced by the progression handlers.  This behavior can be
+   controlled by arguments 'delay_stdout' and 'delay_condition'.
+ 
+
+Version: 0.1.0 [2019-06-07]
+
+NEW FEATURES:
+
+ * Now a progression condition is identified from the R session UUID,
+   the progressor UUID, the incremental progression index, and the
+   progression timestamp.
+   
+BUG FIXES:
+
+ * A progressor object that was exported to the same external R process
+   multiple times would produce progression conditions that was
+   non-distinguishable from those previously exported. Adding a timestamp
+   to the progression condition makes them distinguishable.
+
+
+Version: 0.0.6 [2019-06-03]
+
+NEW FEATURES:
+
+ * Add print() for progression conditions and progressor functions.
+
+ * Now the progressors record more details on the session information.
+   This information is passed along with all progression conditions as
+   part of the internal owner information.
+ 
+
+Version: 0.0.5 [2019-05-20]
+
+NEW FEATURES:
+
+ * Add filesize_handler progression handler.
+ 
+ * Add support for times = 1L for progression handlers which when used will
+   cause the progression to only be presented upon completion (= last step).
+
+ * The 'shutdown' control_progression signalled by with_progress() on exit
+   now contains the 'status' of the evaluation.  If the evaluation was
+   successful, then status = "ok", otherwise "incomplete".  Examples
+   of incomplete evaluations are errors and interrupts.
+   
+
+Version: 0.0.4 [2019-05-18]
+
+NEW FEATURES:
+
+ * Add utils::winProgressBar() progression handler for MS Windows.
+ 
+ * Add support for silent sounds for beepr::beep().
+
+ * Add option 'progressr.enable', which defaults to interactive().
+
+SOFTWARE QUALITY:
+
+ * TESTS: Increased package test coverage of progression handlers by running
+   all code except the last step that calls the backend, which may not be
+   installed or supported on the current platform, e.g. tcltk, beepr,
+   notifier.
+
+BUG FIXES:
+
+ * Precreated progression handlers could only be used once.
+
+ * with_progress(..., cleanup = TRUE) requires a withRestart() such that also
+   "shutdown" progressions can be muffled.
+ 
+
+Version: 0.0.3 [2019-05-17]
+
+NEW FEATURES:
+
+ * Add argument 'enable_after' for progression handlers.
+ 
+ * Now with_progress(..., cleanup = TRUE) will signal a generic "shutdown"
+   progression at the end that will trigger all progression handlers to
+   finish up regardless of all steps have been take or not.
+
+ * Now progressions originating from an unknown source are ignored.
+ 
+ * The default output format of the progress::progress_bar() progression
+   handler is now ":percent :bar :message".
+
+ * The tcltk::tkProgressBar() progression handler now displays the
+   progression message.
+
+ * Now the progression condition itself is passed to the progression
+   reporter functions.
+   
+ * Add debug_handler for prototyping and debugging purposes.
+
+ * Add newline_handler to add newlines between output of multiple handlers.
+
+ * Argument 'intrusiveness' may now be zero. Previously it had to be
+   a strictly positive value.
+
+ * Add without_progress() - which causes all progression conditions to
+   be muffled and ignored.
+   
+BUG FIXES:
+
+ * Progressor functions could produce progression conditions that had
+   the same identifiers and therefore would be considered duplicates
+   such that progression handlers would ignore them.
+
+ * It was an error if a progression took a step big enough to skip more
+   than the next milestone.
+
+ * Progression handlers now keep the internal 'step' field within
+   [0, max_steps] in case of a too big progression step is taken.
+
+ * Progression updates received after progression handler is finished
+   would keep increasing the internal step field.
+ 
+
+Version: 0.0.2 [2019-05-15]
+
+SIGNIFICANT CHANGES:
+
+ * Renamed restart 'consume_progression' to 'muffleProgression' to align
+   with restarts 'muffleMessage' and 'muffleWarning' in base R.
+
+NEW FEATURES:
+
+ * Add a plyr-compatible "progress bar" named progress_progressr().
+
+ * Add option 'progressr.clear'.
+
+ * Visual progression handler will now always render the complete update state
+   when 'clear' is FALSE.
+
+ * Now progression handlers ignore a re-signalled progression condition if it
+   has already been processed previously.
+ 
+ * Now each progression condition holds unique identifiers for the R session
+   and for the progressor that produced the condition.  It also contains an
+   unique index per progressor that is incremented whenever a new progression
+   condition is created.
+
+
+Version: 0.0.1 [2019-05-08]
+
+SIGNIFICANT CHANGES:
+
+ * First decent prototype of this package and the idea behind it.
+ 
+ * Make 'auto_done = TRUE' the default.
+ 
+
+Version: 0.0.0-9004 [2019-05-08]
+
+NEW FEATURES:
+
+ * Add argument 'auto_done' to automatically have progress updates also
+   signal "done" as soon as the last step has been reached.
+
+ * Made 'amount' the first argument of progressors to avoid having to specify
+   it by name if progressing with an amount than the default `amount = 1.0`.
+
+
+Version: 0.0.0-9004 [2019-05-07]
+
+NEW FEATURES:
+
+ * Add argument 'clear' to control whether progress reporter should clear
+   its output upon completion.  The default is to do this, where supported.
+
+ * Add progress update handler based on pbmcapply::progressBar().
+
+ * Each achieved step is now timestamped.
+
+ * Add option 'progressr.debug'.
+ 
+
+Version: 0.0.0-9003 [2019-05-06]
+
+NEW FEATURES:
+
+ * Add 'intrusiveness' parameter that specifies how intrusive/disruptive a
+   certain progress reporter is.  For instance, an auditory reporter is
+   relatively more distruptive than a visual progress bar part of the
+   status bar.
+
+ * Simplified the API for creating new types of progress reporters.
+ 
+
+Version: 0.0.0-9002 [2019-04-25]
+
+NEW FEATURES:
+
+ * Add progressor().
+
+ * Add progress_aggregator().
+
+
+Version: 0.0.0-9001 [2019-04-24]
+
+NEW FEATURES:
+
+ * Add progress update handlers based on utils::txtProgressBar(),
+   tcltk::tkProgressBar(), cat("\a"), progress::progress_bar(), beepr::beep(),
+   and notifier::notify().
+
+ * Add with_progress().
+
+ * Add options 'progressr.handlers' for settings default progress handlers.
+
+ * Add 'progressr.times' for controlling the number of times progress
+   updates are rendered.
+
+ * Add 'progressr.interval' for controlling the minimum number of seconds
+   that needs to ellapse before reporting on the next update.
+ 
+
+Version: 0.0.0-9000 [2019-04-11]
+
+NEW FEATURES:
+
+ * Add progress() to create and signal progression condition.
+
+ * Add progression() to create progression condition.
