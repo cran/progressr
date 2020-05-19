@@ -121,7 +121,7 @@ pre code {
 <p>To get progress updates, we can call it as:</p>
 <pre><code class="language-r">&gt; library(progressr)
 &gt; with_progress(y &lt;- slow_sum(1:10))
-  |=====================                                |  40%
+  |====================                               |  40%
 </code></pre>
 <h2>Customizing how progress is reported</h2>
 <p>The default is to present progress via <code>utils::txtProgressBar()</code>, which is available on all R installations.  To change the default, to, say, <code>progress_bar()</code> by the <strong><a href="https://cran.r-project.org/package=progress">progress</a></strong> package, set:</p>
@@ -129,11 +129,11 @@ pre code {
 </code></pre>
 <p>This progress handler will present itself as:</p>
 <pre><code class="language-r">&gt; with_progress(y &lt;- slow_sum(1:10))
-[==================&gt;---------------------------]  40% Added 4
+[=================&gt;---------------------------]  40% Added 4
 </code></pre>
 <p>To set the default progress handler(s) in all your R sessions, call <code>progressr::handlers(...)</code> in your <code>~/.Rprofile</code> file.</p>
 <h3>Auditory progress updates</h3>
-<p>Note all progress updates have to be presented visually. This can equally well be done auditory. For example, using:</p>
+<p>Progress updates do not have to be presented visually. They can equally well be communicated via audio. For example, using:</p>
 <pre><code class="language-r">handlers(&quot;beepr&quot;)
 </code></pre>
 <p>will present itself as sounds played at the beginning, while progressing, and at the end (using different <strong><a href="https://cran.r-project.org/package=beepr">beepr</a></strong> sounds).  There will be <em>no</em> output written to the terminal;</p>
@@ -150,8 +150,78 @@ pre code {
 <p>To silence all progress updates, use:</p>
 <pre><code class="language-r">handlers(&quot;void&quot;)
 </code></pre>
+<h3>Further configuration of progress handlers</h3>
+<p>Above we have seen examples where the <code>handlers()</code> takes one or more strings as input, e.g. <code>handlers(c(&quot;progress&quot;, &quot;beepr&quot;))</code>.  This is short for a more flexible specification where we can pass a list of handler functions, e.g.</p>
+<pre><code class="language-r">handlers(list(
+  handler_progress(),
+  handler_beepr()
+))
+</code></pre>
+<p>With this construct, we can make adjustments to the default behavior of these progress handlers.  For example, we can configure the <code>format</code>, <code>width</code>, and <code>complete</code> arguments of <code>progress::progress_bar$new()</code>, and tell <strong>beepr</strong> to use a different <code>finish</code> sound and generate sounds at most every two seconds by setting:</p>
+<pre><code class="language-r">handlers(list(
+  handler_progress(
+    format   = &quot;:spin :current/:total (:message) [:bar] :percent in :elapsed ETA: :eta&quot;,
+    width    = 60,
+    complete = &quot;+&quot;
+  ),
+  handler_beepr(
+    finish   = &quot;wilhelm&quot;,
+    interval = 2.0
+  )
+))
+</code></pre>
+<h2>Sticky messages</h2>
+<p>As seen above, some progress handlers present the progress message as part of its output, e.g. the &quot;progress&quot; handler will display the message as part of the progress bar.  It is also possible to &quot;push&quot; the message up together with other terminal output.  This can be done by adding class attribute <code>&quot;sticky&quot;</code> to the progression signaled.  This works for several progress handlers that output to the terminal.  For example, with:</p>
+<pre><code class="language-r">slow_sum &lt;- function(x) {
+  p &lt;- progressr::progressor(along = x)
+  sum &lt;- 0
+  for (kk in seq_along(x)) {
+    Sys.sleep(0.1)
+    sum &lt;- sum + x[kk]
+    p(sprintf(&quot;Step %d&quot;, kk), class = if (kk %% 5 == 0) &quot;sticky&quot;, amount = 0)
+    p(message = sprintf(&quot;Added %g&quot;, x[kk]))
+  }
+  sum
+}
+</code></pre>
+<p>we get</p>
+<pre><code class="language-r">&gt; handlers(&quot;txtprogressbar&quot;)
+&gt; with_progress(y &lt;- slow_sum(1:30))
+Step 5
+Step 10
+  |====================                               |  43%
+</code></pre>
+<p>and</p>
+<pre><code class="language-r">&gt; handlers(&quot;progress&quot;)
+&gt; with_progress(y &lt;- slow_sum(1:30))
+Step 5
+Step 10
+[================&gt;---------------------------]  43% Added 13
+</code></pre>
+<h2>Use regular output as usual alongside progress updates</h2>
+<p>In contrast to other progress-bar frameworks, output from <code>message()</code>, <code>cat()</code>, <code>print()</code> and so on, will <em>not</em> interfere with progress reported via <strong>progressr</strong>.  For example, say we have:</p>
+<pre><code class="language-r">slow_sqrt &lt;- function(xs) {
+  p &lt;- progressor(along = xs)
+  lapply(xs, function(x) {
+    message(&quot;Calculating the square root of &quot;, x)
+    Sys.sleep(2)
+    p(sprintf(&quot;x=%g&quot;, x))
+    sqrt(x)
+  })
+}
+</code></pre>
+<p>we will get:</p>
+<pre><code class="language-r">&gt; library(progressr)
+&gt; handlers(&quot;progress&quot;)
+&gt; with_progress(y &lt;- slow_sqrt(1:8))
+Calculating the square root of 1
+Calculating the square root of 2
+[===========&gt;-------------------------------------]  25% x=2
+</code></pre>
+<p>This works because <code>with_progress()</code> will briefly buffer any output internally and only release it when the next progress update is received just before the progress is re-rendered in the terminal.  This is why you see a two second delay when running the above example.  Note that, if we use progress handlers that do not output to the terminal, such as <code>handlers(&quot;beepr&quot;)</code>, then output does not have to be buffered and will appear immediately.</p>
+<p><em>Comment</em>: When signaling a warning using <code>warning(msg, immediate. = TRUE)</code> the message is immediately outputted to the standard-error stream.  However, this is not possible to emulate when warnings are intercepted using calling handlers, which are used by <code>with_progress()</code>.  This is a limitation of R that cannot be worked around.  Because of this, the above call will behave the same as <code>warning(msg)</code> - that is, all warnings will be buffered by R internally and released only when all computations are done.</p>
 <h2>Support for progressr elsewhere</h2>
-<p>Note that progression updates by <strong>progressr</strong> is designed to work out of the box for any <em>sequential</em> iterator framework in R.  Below is an set of examples for the most common ones.</p>
+<p>Note that progression updates by <strong>progressr</strong> is designed to work out of the box for any iterator framework in R.  Below is an set of examples for the most common ones.</p>
 <h3>Base R Apply Functions</h3>
 <pre><code class="language-r">library(progressr)
 
@@ -165,7 +235,7 @@ with_progress({
     sqrt(x)
   })
 })
-#  |=====================                                |  40%
+#  |====================                               |  40%
 </code></pre>
 <h3>The foreach package</h3>
 <pre><code class="language-r">library(foreach)
@@ -181,7 +251,7 @@ with_progress({
     sqrt(x)
   }
 })
-#  |=====================                                |  40%
+#  |====================                               |  40%
 </code></pre>
 <h3>The purrr package</h3>
 <pre><code class="language-r">library(purrr)
@@ -197,25 +267,27 @@ with_progress({
     sqrt(x)
   })
 })
-#  |=====================                                |  40%
+#  |====================                               |  40%
 </code></pre>
 <h3>The plyr package</h3>
-<p>The functions in the <a href="https://cran.r-project.org/package=plyr"><strong>plyr</strong></a> package take argument <code>.progress</code>, which can be used to produce progress updates.  To have them generate <strong>progressr</strong> 'progression' updates, use <code>.progress = &quot;progressr&quot;</code>. For example,</p>
 <pre><code class="language-r">library(plyr)
 library(progressr)
 
 xs &lt;- 1:5
 
 with_progress({
+  p &lt;- progressor(along = xs)
   y &lt;- llply(xs, function(x, ...) {
+    p(sprintf(&quot;x=%g&quot;, x))
     Sys.sleep(0.1)
     sqrt(x)
-  }, .progress = &quot;progressr&quot;)
+  })
 })
-#  |=====================                                |  40%
+#  |====================                               |  40%
 </code></pre>
+<p><em>Note:</em> This solution does not involved the <code>.progress = TRUE</code> argument that <strong>plyr</strong> implements.  Because <strong>progressr</strong> is more flexible, and because <code>.progress</code> is automatically disabled when running in parallel (see below), I recommended to use the above <strong>progressr</strong> approach instead.  Having said this, as proof-of-concept, the <strong>progressr</strong> package implements support <code>.progress = &quot;progressr&quot;</code> if you still prefer the <strong>plyr</strong> way of doing it.</p>
 <h2>Parallel processing and progress updates</h2>
-<p>The <strong><a href="https://cran.r-project.org/package=future">future</a></strong> framework, which provides a unified API for parallel and distributed processing in R, has built-in support for the kind of progression updates produced by the <strong>progressr</strong> package.  This means that you can use it with for instance <strong><a href="https://cran.r-project.org/package=future.apply">future.apply</a></strong>, <strong><a href="https://cran.r-project.org/package=furrr">furrr</a></strong>, and <strong><a href="https://cran.r-project.org/package=foreach">foreach</a></strong> with <strong><a href="https://cran.r-project.org/package=doFuture">doFuture</a></strong>.</p>
+<p>The <strong><a href="https://cran.r-project.org/package=future">future</a></strong> framework, which provides a unified API for parallel and distributed processing in R, has built-in support for the kind of progression updates produced by the <strong>progressr</strong> package.  This means that you can use it with for instance <strong><a href="https://cran.r-project.org/package=future.apply">future.apply</a></strong>, <strong><a href="https://cran.r-project.org/package=furrr">furrr</a></strong>, and <strong><a href="https://cran.r-project.org/package=foreach">foreach</a></strong> with <strong><a href="https://cran.r-project.org/package=doFuture">doFuture</a></strong>, and <strong><a href="https://cran.r-project.org/package=plyr">plyr</a></strong> with <strong>doFuture</strong>.</p>
 <h3>future_lapply() - parallel lapply()</h3>
 <p>Here is an example that uses <code>future_lapply()</code> of the <strong><a href="https://cran.r-project.org/package=future.apply">future.apply</a></strong> package to parallelize on the local machine while at the same time signaling progression updates:</p>
 <pre><code class="language-r">library(future.apply)
@@ -234,7 +306,7 @@ with_progress({
     sqrt(x)
   })
 })
-## [=================&gt;-----------------------------]  40% x=2
+# [=================&gt;------------------------------]  40% x=2
 </code></pre>
 <h3>foreach() with doFuture</h3>
 <p>Here is an example that uses <code>foreach()</code> of the <strong><a href="https://cran.r-project.org/package=foreach">foreach</a></strong> package to parallelize on the local machine (via <strong><a href="https://cran.r-project.org/package=doFuture">doFuture</a></strong>) while at the same time signaling progression updates:</p>
@@ -255,9 +327,10 @@ with_progress({
     sqrt(x)
   }
 })
-## [=================&gt;-----------------------------]  40% x=2
+# [=================&gt;------------------------------]  40% x=2
 </code></pre>
 <h3>future_map() - parallel purrr::map()</h3>
+<p>Here is an example that uses <code>future_map()</code> of the <strong><a href="https://cran.r-project.org/package=furrr">furrr</a></strong> package to parallelize on the local machine while at the same time signaling progression updates:</p>
 <pre><code class="language-r">library(furrr)
 plan(multisession)
 
@@ -274,10 +347,68 @@ with_progress({
     sqrt(x)
   })
 })
-## [=================&gt;-----------------------------]  40% x=2
+# [=================&gt;------------------------------]  40% x=2
 </code></pre>
-<h3>The plyr package</h3>
-<p>Unfortunately, when using <code>.parallel = TRUE</code>, the <strong>plyr</strong> package resets <code>.progress</code> to the default <code>&quot;none&quot;</code> internally regardless how we set <code>.progress</code>.  This prevents <strong>progressr</strong> progression updates from being used with <em>parallel</em> <strong>plyr</strong>.  If it was not for this forced reset, using <code>doFuture::registerDoFuture()</code> with <code>.parallel = TRUE</code> and <code>.progress = &quot;progressr&quot;</code> would indeed have reported on progress updates also when <strong>plyr</strong> runs in parallel.  See <a href="https://github.com/HenrikBengtsson/progressr/issues/70">https://github.com/HenrikBengtsson/progressr/issues/70</a> for a hack that works around this limitation.</p>
+<p><em>Note:</em> This solution does not involved the <code>.progress = TRUE</code> argument that <strong>furrr</strong> implements.  Because <strong>progressr</strong> is more generic and because <code>.progress = TRUE</code> only works for certain future backends and produces errors on others, I recommended to stop using <code>.progress = TRUE</code> and use the <strong>progressr</strong> package instead.</p>
+<h3>plyr::llply(..., .parallel = TRUE) with doFuture</h3>
+<p>Here is an example that uses <code>llply()</code> of the <strong><a href="https://cran.r-project.org/package=plyr">plyr</a></strong> package to parallelize on the local machine while at the same time signaling progression updates:</p>
+<pre><code class="language-r">library(plyr)
+library(doFuture)
+registerDoFuture()
+plan(multisession)
+
+library(progressr)
+handlers(&quot;progress&quot;, &quot;beepr&quot;)
+
+xs &lt;- 1:5
+
+with_progress({
+  p &lt;- progressor(along = xs)
+  y &lt;- llply(xs, function(x, ...) {
+    p(sprintf(&quot;x=%g&quot;, x))
+    Sys.sleep(0.1)
+    sqrt(x)
+  }, .parallel = TRUE)
+})
+# [=================&gt;------------------------------]  40% x=2
+</code></pre>
+<p><em>Note:</em> Although <strong>progressr</strong> implements support for using <code>.progress = &quot;progressr&quot;</code> with <strong>plyr</strong>, unfortunately, this will <em>not</em> work when using <code>.parallel = TRUE</code>.  This is because <strong>plyr</strong> resets <code>.progress</code> to the default <code>&quot;none&quot;</code> internally regardless how we set <code>.progress</code>. See <a href="https://github.com/HenrikBengtsson/progressr/issues/70">https://github.com/HenrikBengtsson/progressr/issues/70</a> for details and a hack that works around this limitation.</p>
+<h3>Near-live versus buffered progress updates with futures</h3>
+<p>As of May 2020, there are three types of <strong>future</strong> backends that are known(*) to provide near-live progress updates:</p>
+<ol>
+<li><code>sequential</code>,</li>
+<li><code>multisession</code>, and</li>
+<li><code>cluster</code> (local and remote)</li>
+</ol>
+<p>Here &quot;near-live&quot; means that the progress handlers will report on progress almost immediately when the progress is signaled on the worker.   For all other future backends, the progress updates are only relayed back to the main machine and reported together with the results of the futures.  For instance, if <code>future_lapply(X, FUN)</code> chunks up the processing of, say, 100 elements in <code>X</code> into eight futures, we will see progress from each of the 100 elements as they are done when using a future backend supporting &quot;near-live&quot; updates, whereas we will only see those updated to be flushed eight times when using any other types of future backends.</p>
+<p>(*) Other future backends may gain support for &quot;near-live&quot; progress updating later.  Adding support for those is independent of the <strong>progressr</strong> package.  Feature requests for adding that support should go to those future-backend packages.</p>
+<h2>Note of caution - sending progress updates too frequently</h2>
+<p>Signaling progress updates comes with some overhead.  In situation where we use progress updates, this overhead is typically much smaller than the task we are processing in each step.  However, if the task we iterate over is quick, then the extra time induced by the progress updates might end up dominating the overall processing time.  If that is the case, a simple solution is to only signal progress updates every n:th step.  Here is a version of <code>slow_sum()</code> that signals progress every 10:th iteration:</p>
+<pre><code>slow_sum &lt;- function(x) {
+  p &lt;- progressr::progressor(length(x) / 10)
+  sum &lt;- 0
+  for (kk in seq_along(x)) {
+    Sys.sleep(0.1)
+    sum &lt;- sum + x[kk]
+    if (kk %% 10 == 0) p(message = sprintf(&quot;Added %g&quot;, x[kk]))
+  }
+  sum
+}
+</code></pre>
+<p>The overhead of progress signaling may depend on context.  For example, in parallel processing with near-live progress updates via 'multisession' futures, each progress update is communicated via a socket connections back to the main R session.  These connections might become clogged up if progress updates are too frequent.</p>
+<h2>Progress updates in non-interactive mode (&quot;batch mode&quot;)</h2>
+<p>When running R from the command line, R runs in a non-interactive mode
+(<code>interactive()</code> returns <code>FALSE</code>).  The default behavior of <code>with_progress()</code>
+is to <em>not</em> report on progress in non-interactive mode.
+To reported on progress also then, set R options <code>progressr.enable</code> or
+environment variable <code>R_PROGRESSR_ENABLE</code> to <code>TRUE</code>.  For example,</p>
+<pre><code class="language-sh">$ Rscript -e &quot;library(progressr)&quot; -e &quot;with_progress(y &lt;- slow_sum(1:10))&quot;
+</code></pre>
+<p>will <em>not</em> report on progress, whereas</p>
+<pre><code class="language-sh">$ export R_PROGRESSR_ENABLE=TRUE
+$ Rscript -e &quot;library(progressr)&quot; -e &quot;with_progress(y &lt;- slow_sum(1:10))&quot;
+</code></pre>
+<p>will.</p>
 <h2>Roadmap</h2>
 <p>Because this project is under active development, the progressr API is currently kept at a very minimum.  This will allow for the framework and the API to evolve while minimizing the risk for breaking code that depends on it.  The roadmap for developing the API is roughly:</p>
 <ol>
