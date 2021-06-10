@@ -2,11 +2,11 @@ source("incl/start.R")
 
 options(progressr.clear = FALSE)
 
-if (requireNamespace("progress", quietly = TRUE)) {
-  options(progressr.handlers = handler_progress)
+if (requireNamespace("rstudioapi", quietly = TRUE) && rstudioapi::isAvailable()) {
+  options(progressr.handlers = handler_rstudio)
 }  
 
-message("handler_progress() ...")
+message("handler_rstudio() ...")
 
 for (x in list(1:10, 1L, integer(0))) {
   message("length(x): ", length(x))
@@ -19,6 +19,6 @@ for (x in list(1:10, 1L, integer(0))) {
   })
 }
 
-message("handler_progress() ... done")
+message("handler_rstudio() ... done")
 
 source("incl/end.R")
