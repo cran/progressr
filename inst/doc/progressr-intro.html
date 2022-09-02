@@ -292,7 +292,7 @@ handlers(global = TRUE)
 
 my_fcn &lt;- function(xs) {
   p &lt;- progressor(along = xs)
-  y &lt;- lapply(xs, function(x) {
+  lapply(xs, function(x) {
     Sys.sleep(0.1)
     p(sprintf(&quot;x=%g&quot;, x))
     sqrt(x)
@@ -309,7 +309,7 @@ handlers(global = TRUE)
 
 my_fcn &lt;- function(xs) {
   p &lt;- progressor(along = xs)
-  y &lt;- foreach(x = xs) %do% {
+  foreach(x = xs) %do% {
     Sys.sleep(0.1)
     p(sprintf(&quot;x=%g&quot;, x))
     sqrt(x)
@@ -326,7 +326,7 @@ handlers(global = TRUE)
 
 my_fcn &lt;- function(xs) {
   p &lt;- progressor(along = xs)
-  y &lt;- map(xs, function(x) {
+  map(xs, function(x) {
     Sys.sleep(0.1)
     p(sprintf(&quot;x=%g&quot;, x))
     sqrt(x)
@@ -343,7 +343,7 @@ handlers(global = TRUE)
 
 my_fcn &lt;- function(xs) {
   p &lt;- progressor(along = xs)
-  y &lt;- llply(xs, function(x, ...) {
+  llply(xs, function(x, ...) {
     Sys.sleep(0.1)
     p(sprintf(&quot;x=%g&quot;, x))
     sqrt(x)
@@ -367,7 +367,7 @@ handlers(&quot;progress&quot;, &quot;beepr&quot;)
 
 my_fcn &lt;- function(xs) {
   p &lt;- progressor(along = xs)
-  y &lt;- future_lapply(xs, function(x, ...) {
+  future_lapply(xs, function(x, ...) {
     Sys.sleep(6.0-x)
     p(sprintf(&quot;x=%g&quot;, x))
     sqrt(x)
@@ -389,7 +389,7 @@ handlers(&quot;progress&quot;, &quot;beepr&quot;)
 
 my_fcn &lt;- function(xs) {
   p &lt;- progressor(along = xs)
-  y &lt;- foreach(x = xs) %dopar% {
+  foreach(x = xs) %dopar% {
     Sys.sleep(6.0-x)
     p(sprintf(&quot;x=%g&quot;, x))
     sqrt(x)
@@ -410,7 +410,7 @@ handlers(&quot;progress&quot;, &quot;beepr&quot;)
 
 my_fcn &lt;- function(xs) {
   p &lt;- progressor(along = xs)
-  y &lt;- future_map(xs, function(x) {
+  future_map(xs, function(x) {
     Sys.sleep(6.0-x)
     p(sprintf(&quot;x=%g&quot;, x))
     sqrt(x)
@@ -435,7 +435,7 @@ handlers(&quot;progress&quot;, &quot;beepr&quot;)
 
 my_fcn &lt;- function(xs) {
   p &lt;- progressor(along = xs)
-  y &lt;- bplapply(xs, function(x) {
+  bplapply(xs, function(x) {
     Sys.sleep(6.0-x)
     p(sprintf(&quot;x=%g&quot;, x))
     sqrt(x)
@@ -458,7 +458,7 @@ handlers(&quot;progress&quot;, &quot;beepr&quot;)
 
 my_fcn &lt;- function(xs) {
   p &lt;- progressor(along = xs)
-  y &lt;- llply(xs, function(x, ...) {
+  llply(xs, function(x, ...) {
     Sys.sleep(6.0-x)
     p(sprintf(&quot;x=%g&quot;, x))
     sqrt(x)
