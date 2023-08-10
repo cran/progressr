@@ -479,6 +479,12 @@ your <code>progressr::handlers()</code> settings.  For example, with:</p>
 progress panel.</p>
 <p>To make <strong>cli</strong> report via <strong>progressr</strong> in all your R session, set
 the above R option in your <code>~/.Rprofile</code> startup file.</p>
+<p><em>Note:</em> A <strong>cli</strong> progress bar can have a &quot;name&quot;, which can be
+specfied in <strong>purrr</strong> function via argument <code>.progress</code>,
+e.g. <code>.progress = &quot;processing&quot;</code>.  This name is then displayed in front
+of the progress bar.  However, because the <strong>progressr</strong> framework
+does not have a concept of progress &quot;name&quot;, they are silently ignored
+when using <code>options(cli.progress_handlers = &quot;progressr&quot;)</code>.</p>
 <h2>Parallel processing and progress updates</h2>
 <p>The <strong><a href="https://cran.r-project.org/package=future">future</a></strong> framework, which provides a unified API for parallel
 and distributed processing in R, has built-in support for the kind of
