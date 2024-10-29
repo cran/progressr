@@ -518,8 +518,31 @@ my_fcn(1:5)
 </code></pre>
 <h3>foreach() with doFuture</h3>
 <p>Here is an example that uses <code>foreach()</code> of the <strong><a href="https://cran.r-project.org/package=foreach">foreach</a></strong> package
-to parallelize on the local machine (via <strong><a href="https://cran.r-project.org/package=doFuture">doFuture</a></strong>) while at the
-same time signaling progression updates:</p>
+together with <code>%dofuture%</code> of the <strong><a href="https://cran.r-project.org/package=doFuture">doFuture</a></strong> package to
+parallelize while reporting on progress.  This example parallelizes on
+the local machine, it works alsof for remote machines:</p>
+<pre><code class="language-r">library(doFuture)    ## %dofuture%
+plan(multisession)
+
+library(progressr)
+handlers(global = TRUE)
+handlers(&quot;progress&quot;, &quot;beepr&quot;)
+
+my_fcn &lt;- function(xs) {
+  p &lt;- progressor(along = xs)
+  foreach(x = xs) %dofuture% {
+    Sys.sleep(6.0-x)
+    p(sprintf(&quot;x=%g&quot;, x))
+    sqrt(x)
+  }
+}
+
+my_fcn(1:5)
+# / [================&gt;-----------------------------]  40% x=2
+</code></pre>
+<p>For existing code using the traditional <code>%dopar%</code> operators of the
+<strong><a href="https://cran.r-project.org/package=foreach">foreach</a></strong> package, we can register the <strong><a href="https://cran.r-project.org/package=doFuture">doFuture</a></strong> adaptor and
+use the same <strong>progressr</strong> as above to progress updates;</p>
 <pre><code class="language-r">library(doFuture)
 registerDoFuture()      ## %dopar% parallelizes via future
 plan(multisession)
@@ -711,7 +734,7 @@ additional progression handlers</p>
 </li>
 </ul>
 <p>For a more up-to-date view on what features might be added, see
-<a href="https://github.com/HenrikBengtsson/progressr/issues">https://github.com/HenrikBengtsson/progressr/issues</a>.</p>
+<a href="https://github.com/futureverse/progressr/issues">https://github.com/futureverse/progressr/issues</a>.</p>
 <h2>Appendix</h2>
 <h3>Known issues</h3>
 <h4>A progressor cannot be created in the global environment</h4>
