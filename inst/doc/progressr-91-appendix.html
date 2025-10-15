@@ -186,10 +186,11 @@ risk it would never finish and block all of the following progressors.</p>
 <h4>Setting global progressr handlers during startup does not work</h4>
 <p>Positron does not support setting global calling handlers during R's
 startup process, e.g. in <code>~/.Rprofile</code>. Even if such handlers are
-registered, they have no effect. This is a <a href="https://github.com/posit-dev/positron/issues/9480">bug in
-Positron</a>, which
-was last confirmed with Position 2025.09.0 on Linux. Because of this,
-having something like in your <code>~/.Rprofile</code>:</p>
+registered, they have no effect. This is a <a href="https://github.com/posit-dev/positron/issues/6892">bug in
+Positron</a>
+(2025-03-20), which was most recently confirmed with Position
+2025.09.0 on Linux. Because of this, having something like in your
+<code>~/.Rprofile</code>:</p>
 <pre><code class="language-r">if (requireNamespace(&quot;progressr&quot;, quietly = TRUE)) {
   progressr::handlers(global = TRUE)
 }
@@ -225,7 +226,8 @@ M: Added value 5
 </code></pre>
 <p>I do not fully understand the reason for this, but I hope we can get
 to the bottom of it and fix it, either in <strong>progressr</strong> or in
-Positron.</p>
+Positron, e.g. <a href="https://github.com/posit-dev/positron/issues/9486">Bug #9486</a>
+(2025-09-18).</p>
 <h3>Jupyter Notebook and Jupyter Lab</h3>
 <h4>Reporting progress to stderr does not work</h4>
 <p>The default for most terminal progress renders, including the ones for
