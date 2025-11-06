@@ -1,6 +1,6 @@
-c0829d37b21a4522d269a71060c737fd *DESCRIPTION
-af56130d1fea2a2fe467952317ef382b *NAMESPACE
-ef4b8b5e997a5a7253a2780bedb962fe *NEWS.md
+0910a4209ec81c3b352c2521c41808f0 *DESCRIPTION
+a2638e2690e07d0a5b9f933788c99860 *NAMESPACE
+d1b39b9c3592ab36fdacec4863f543b3 *NEWS.md
 ca4e68b5ea80bd70b2724fa4329ea11c *R/control_progression.R
 3695a7cc8e7e45ea8dedbfed46027067 *R/delays.R
 53ad0e80b06090a20409870d3229972f *R/global_progression_handler.R
@@ -32,7 +32,7 @@ b37709e3fd912abeb0fa19dfd7db1db8 *R/plyr_progress_progressr.R
 86775a75375a856a36d0d1bd3261ac62 *R/progress.R
 a89f3cf65ec768711d9aa52662b76e2e *R/progress_aggregator.R
 21d29e39cb15c263117b7b3ae55597c3 *R/progression.R
-dfe9107de2b7fa2ddaaa41ce0fc7c5a9 *R/progressor.R
+aefae8ef754e985b050642f0ee5e0f5a *R/progressor.R
 bc40cebfebe0613bc0cf56ec631bf3c5 *R/progressr-package.R
 b035d805121a2b99ebc2db809fc0666d *R/rstudio-console.R
 f1488361fd587ce2968d30804f28a6bf *R/slow_sum.R
@@ -42,10 +42,10 @@ ae88bc828f20ebb863643b1e06d848c2 *R/uuid.R
 f04d430646b47cdd2007ca1a105853e6 *R/vignette_engine.R
 9711b64740691bb2c8030bb0fea8dc4a *R/warn_about_too_many_progressions.R
 6624e3f5fd4bbc767a97645d0be64097 *R/withProgressShiny.R
-b0dd11ecee92124599e7d95881cf252b *R/with_progress.R
+e27b793ed8340e2e30c8c983c3522d5b *R/with_progress.R
 23cb530c0b50186772d9cb89cd13a0bc *R/without_progress.R
 f10b037d241fb268da43f8cc69e4a09a *R/zzz.R
-af94c72335d3d7fd97b74838061bedc1 *build/vignette.rds
+04efd8a7f06ecb552a64afbefea3f4fa *build/vignette.rds
 d56c68ebdab92d0f077908f65c87ada0 *demo/00Index
 1ad5e354b2a55de8aaacba28eaf62daf *demo/mandelbrot.R
 3c68ef8714b641d24d5c282df9349b5f *inst/WORDLIST
@@ -63,8 +63,8 @@ b7fa73a16681017cf4a9254c0c6810bc *inst/doc/progressr-25-replace-cli-with-progres
 7492bf88d888893f5907332095f73936 *inst/doc/progressr-29-debug.md
 0523e3c0d95b9b2336b8b135c7bbb692 *inst/doc/progressr-31-knitr.html
 01b7832ae82a42f411d20a52d6b3a34a *inst/doc/progressr-31-knitr.md
-afd7dc4f71c9f5a84284a2ef01f685b6 *inst/doc/progressr-91-appendix.html
-5bc78ace4d1fdfea07482a53a168746d *inst/doc/progressr-91-appendix.md
+cf8676f3cc58684e36592e65096044f7 *inst/doc/progressr-91-appendix.html
+e077339894ab24606ae86aa5dd2613e8 *inst/doc/progressr-91-appendix.md
 4acfd850636151563f1175921f33ab31 *inst/testme/_epilogue/002.undo-state.R
 3573c72602ff98dc7224652fb1114010 *inst/testme/_epilogue/090.gc.R
 351d953a6347d4187a40fa5f99ae4501 *inst/testme/_epilogue/099.session_info.R
@@ -153,7 +153,7 @@ c3683146e3d05af1320a3d5b0657a5e5 *man/handlers.Rd
 31a3604ef1f7843bd3c617d04877a64d *man/progress_aggregator.Rd
 fd19d84dd20db252fde2428f52a0a0e4 *man/progress_progressr.Rd
 610e4efc1e01198e9e0eff2f517a0970 *man/progression.Rd
-ed67561741030cdc2e32d831cc9340ea *man/progressor.Rd
+7e8c6bdfa78f110b7f6028a83f77514c *man/progressor.Rd
 db5f85e7de7eea1314c0b6097f94eaa5 *man/progressr.Rd
 c7b8f4b4a3f8e156e298dfa83bf98785 *man/progressr.options.Rd
 980b91430fca12e6d5d4158f86f6362b *man/register_global_progression_handler.Rd
@@ -209,4 +209,4 @@ d8007dc72dbfa0dad953d29e09e70552 *vignettes/progressr-01-intro.md
 b7fa73a16681017cf4a9254c0c6810bc *vignettes/progressr-25-replace-cli-with-progressr.md
 7492bf88d888893f5907332095f73936 *vignettes/progressr-29-debug.md
 01b7832ae82a42f411d20a52d6b3a34a *vignettes/progressr-31-knitr.md
-5bc78ace4d1fdfea07482a53a168746d *vignettes/progressr-91-appendix.md
+e077339894ab24606ae86aa5dd2613e8 *vignettes/progressr-91-appendix.md
