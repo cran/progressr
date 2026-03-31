@@ -77,9 +77,9 @@ pre code {
 %\VignetteKeyword{plyr}
 %\VignetteEngine{progressr::selfonly}
 -->
-<p>Progress updates by <strong><a href="https://progressr.futureverse.org">progressr</a></strong> is designed to work out of the box
+<p>Progress updates by <strong><a href="https://progressr.futureverse.org">progressr</a></strong> are designed to work out of the box
 for any iterator framework in R, e.g. <code>lapply()</code>, <strong><a href="https://cran.r-project.org/package=foreach">foreach</a></strong>,
-<strong><a href="https://cran.r-project.org/package=purrr">purrr</a></strong>, and <strong><a href="https://cran.r-project.org/package=plyr">plyr</a></strong>. Below you will a set of examples that
+<strong><a href="https://cran.r-project.org/package=purrr">purrr</a></strong>, and <strong><a href="https://cran.r-project.org/package=plyr">plyr</a></strong>. Below you will find a set of examples that
 illustrate how to use <strong>progressr</strong> in common use cases.</p>
 <h2>Base R apply functions</h2>
 <pre><code class="language-r">library(progressr)
@@ -150,7 +150,7 @@ y &lt;- my_fcn(1:10)
 </code></pre>
 <p>Note how this solution does not make use of <strong>plyr</strong>'s <code>.progress</code>
 argument, because the above solution is more powerful and more
-flexible, e.g. we have more control on progress updates and their
+flexible, e.g. we have more control over progress updates and their
 messages.  However, if you prefer the traditional <strong>plyr</strong> approach,
 you can use <code>.progress = &quot;progressr&quot;</code>, e.g. <code>y &lt;- llply(..., .progress = &quot;progressr&quot;)</code>.</p>
 </body>

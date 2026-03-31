@@ -79,7 +79,7 @@ pre code {
 <p>When running R from the command line, R runs in a non-interactive mode
 (<code>interactive()</code> returns <code>FALSE</code>).  The default behavior of
 <strong>progressr</strong> is to <em>not</em> report on progress in non-interactive mode.
-To reported on progress also then, set R options <code>progressr.enable</code> or
+To report on progress also then, set R options <code>progressr.enable</code> or
 environment variable <code>R_PROGRESSR_ENABLE</code> to <code>TRUE</code>.  For example,</p>
 <pre><code class="language-sh">$ Rscript -e &quot;library(progressr)&quot; -e &quot;with_progress(y &lt;- slow_sum(1:10))&quot;
 </code></pre>
@@ -90,14 +90,14 @@ $ Rscript -e &quot;library(progressr)&quot; -e &quot;with_progress(y &lt;- slow_
 <p>will.</p>
 <h2>Notes of caution</h2>
 <h3>Avoid sending progress updates too frequently</h3>
-<p>Signaling progress updates comes with some overhead.  In situation
+<p>Signaling progress updates comes with some overhead.  In situations
 where we use progress updates, this overhead is typically much smaller
 than the task we are processing in each step.  However, if the task we
 iterate over is quick, then the extra time induced by the progress
 updates might end up dominating the overall processing time.  If that
 is the case, a simple solution is to only signal progress updates
-every n:th step.  Here is a version of <code>slow_sum()</code> that signals
-progress every 10:th iteration:</p>
+every nth step.  Here is a version of <code>slow_sum()</code> that signals
+progress every 10th iteration:</p>
 <pre><code>slow_sum &lt;- function(x) {
   p &lt;- progressr::progressor(length(x) / 10)
   sum &lt;- 0
@@ -120,15 +120,15 @@ might become clogged up if progress updates are too frequent.</p>
 circumstances.  For example, it cannot be called within <code>tryCatch()</code>
 and <code>withCallingHandlers()</code>;</p>
 <pre><code class="language-r">&gt; tryCatch(handlers(global = TRUE), error = identity)
-Error in globalCallingHandlers(NULL) : 
+Error in globalCallingHandlers(NULL) :
   should not be called with handlers on the stack
 </code></pre>
 <p>This is not a bug - neither in <strong>progressr</strong> nor in R itself. It's due
 to a conservative design on how <em>global</em> calling handlers should work
-in R. If it allowed, there's a risk we might end up getting weird and
+in R. If it were allowed, there's a risk we might end up getting weird and
 unpredictable behaviors when messages, warnings, errors, and other
 types of conditions are signaled.</p>
-<p>Because <code>tryCatch()</code> and <code>withCallingHandlers()</code> is used in many
+<p>Because <code>tryCatch()</code> and <code>withCallingHandlers()</code> are used in many
 places throughout base R, this means that we also cannot call
 <code>handlers(global = TRUE)</code> as part of a package's startup process,
 e.g. <code>.onLoad()</code> or <code>.onAttach()</code>.</p>
@@ -141,7 +141,7 @@ processing the document, e.g.</p>
 </code></pre>
 <h3>A progressor cannot be created in the global environment</h3>
 <p>It is not possible to create a progressor in the global environment,
-e.g. in the the top-level of a script. It can only be created inside a
+e.g. in the top-level of a script. It can only be created inside a
 function, within <code>with_progress({ ... })</code>, <code>local({ ... })</code>, or a
 similar construct.  For example, the following:</p>
 <pre><code class="language-r">library(progressr)
@@ -156,10 +156,10 @@ y &lt;- lapply(xs, function(x) {
 })
 </code></pre>
 <p>results in an error if tried:</p>
-<pre><code>Error in progressor(along = xs) : 
+<pre><code>Error in progressor(along = xs) :
   A progressor must not be created in the global environment unless wrapped in a
   with_progress() or without_progress() call. Alternatively, create it inside a
-  function or in a local() environment to make sure there is a finite life span
+  function or in a local() environment to make sure there is a finite lifespan
   of the progressor
 </code></pre>
 <p>The solution is to wrap it in a <code>local({ ... })</code> call, or more
@@ -178,7 +178,7 @@ with_progress({
 })
 #  |====================                               |  40%
 </code></pre>
-<p>The main reason for this is to limit the life span of each progressor.
+<p>The main reason for this is to limit the lifespan of each progressor.
 If we created it in the global environment, there is a significant
 risk it would never finish and block all of the following progressors.</p>
 <h3>No coloring by the 'cli' and 'crayon' packages</h3>
@@ -292,10 +292,10 @@ Positron, e.g. <a href="https://github.com/posit-dev/positron/issues/9486">Bug #
 <h3>Jupyter: Reporting progress to stderr (default) does not work</h3>
 <p>The default for most terminal progress renders, including the ones for
 <strong>progressr</strong>, display the progress on standard error (stderr). Due to
-limitation in Jupyter, this default does not work there. The reason is
+a limitation in Jupyter, this default does not work there. The reason is
 that <a href="https://github.com/futureverse/progressr/issues/170">Jupyter silently
 drops</a> any output
-send to stderr, e.g.</p>
+sent to stderr, e.g.</p>
 <pre><code class="language-r">&gt; cat(&quot;hello stderr\n&quot;, file = stderr())
 &gt; cat(&quot;hello stdout\n&quot;, file = stdout())
 hello stdout
@@ -339,7 +339,7 @@ abc
 
 def
 
-&gt; 
+&gt;
 </code></pre>
 <p>This causes any progress framework (e.g. the <strong>progress</strong> package)
 that reports via messages to render progress output very poorly or not

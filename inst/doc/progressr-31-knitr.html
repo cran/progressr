@@ -74,7 +74,7 @@ pre code {
 %\VignetteKeyword{knitr}
 %\VignetteEngine{progressr::selfonly}
 -->
-<p>When compiling (&quot;knitting&quot;) an knitr-based vignette, for instance, via
+<p>When compiling (&quot;knitting&quot;) a knitr-based vignette, for instance, via
 <code>knitr::knit()</code>, <strong><a href="https://cran.r-project.org/package=knitr">knitr</a></strong> shows the progress of code chunks
 processed thus far using a progress bar.  We can use <strong><a href="https://progressr.futureverse.org">progressr</a></strong>
 also for this type of progress reporting.  To have <strong>knitr</strong> report on
@@ -104,7 +104,7 @@ see the progress updates, you can add the &quot;slowdown&quot; handler to slow
 down the knitting process, e.g.</p>
 <pre><code class="language-r">progressr::handlers(c(&quot;pbcol&quot;, &quot;slowdown&quot;))
 </code></pre>
-<p>This will add the overall process to take at least ten seconds
+<p>This will cause the overall process to take at least ten seconds
 (default).</p>
 <p>To make <strong>knitr</strong> report via <strong>progressr</strong> in all your R session, set
 the above R option in your <code>~/.Rprofile</code> startup file, e.g.</p>

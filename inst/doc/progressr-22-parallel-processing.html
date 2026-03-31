@@ -103,10 +103,10 @@ y &lt;- my_fcn(1:10)
 <p>The <strong><a href="https://www.futureverse.org">futureverse</a></strong> framework, which provides a unified API for parallel
 and distributed processing in R, has built-in support for the kind of
 progression updates produced by the <strong>progressr</strong> package.  This means
-that you can use it with for instance <strong><a href="https://future.apply.futureverse.org">future.apply</a></strong>, <strong><a href="https://furrr.futureverse.org">furrr</a></strong>,
+that you can use it with, for instance, <strong><a href="https://future.apply.futureverse.org">future.apply</a></strong>, <strong><a href="https://furrr.futureverse.org">furrr</a></strong>,
 and <strong><a href="https://cran.r-project.org/package=foreach">foreach</a></strong> with <strong><a href="https://doFuture.futureverse.org">doFuture</a></strong>, and <strong><a href="https://cran.r-project.org/package=plyr">plyr</a></strong> or
 <strong><a href="https://www.bioconductor.org/packages/BiocParallel/">BiocParallel</a></strong> with <strong>doFuture</strong>.  In contrast, <em>non-future</em>
-parallelization methods such as <strong>parallel</strong>'s <code>mclapply()</code> and,
+parallelization methods such as <strong>parallel</strong>'s <code>mclapply()</code> and
 <code>parallel::parLapply()</code>, and <strong>foreach</strong> adapters like <strong>doParallel</strong>
 do <em>not</em> support progress reports via <strong>progressr</strong>.</p>
 <h3>future_lapply() - parallel lapply()</h3>
@@ -133,7 +133,7 @@ y &lt;- my_fcn(1:10)
 <p>Here is an example that uses <code>foreach()</code> of the <strong><a href="https://cran.r-project.org/package=foreach">foreach</a></strong> package
 together with <code>%dofuture%</code> of the <strong><a href="https://doFuture.futureverse.org">doFuture</a></strong> package to
 parallelize while reporting on progress.  This example parallelizes on
-the local machine, it works also for remote machines:</p>
+the local machine; it works also for remote machines:</p>
 <pre><code class="language-r">library(doFuture)    ## %dofuture%
 plan(multisession, workers = 2)
 
@@ -155,7 +155,7 @@ y &lt;- my_fcn(1:10)
 </code></pre>
 <p>For existing code using the traditional <code>%dopar%</code> operators of the
 <strong><a href="https://cran.r-project.org/package=foreach">foreach</a></strong> package, we can register the <strong><a href="https://doFuture.futureverse.org">doFuture</a></strong> adapter and
-use the same <strong>progressr</strong> as above to progress updates;</p>
+use the same <strong>progressr</strong> as above to report progress updates;</p>
 <pre><code class="language-r">library(doFuture)
 registerDoFuture()      ## %dopar% parallelizes via future
 plan(multisession, workers = 2)
@@ -199,10 +199,10 @@ my_fcn &lt;- function(xs) {
 y &lt;- my_fcn(1:10)
 # / [================&gt;-----------------------------]  40% x=2
 </code></pre>
-<p><em>Note:</em> This solution does not involved the <code>.progress = TRUE</code>
+<p><em>Note:</em> This solution does not involve the <code>.progress = TRUE</code>
 argument that <strong>furrr</strong> implements.  Because <strong>progressr</strong> is more
 generic and because <code>.progress = TRUE</code> only supports certain future
-backends and produces errors on non-supported backends, I recommended
+backends and produces errors on non-supported backends, I recommend
 to stop using <code>.progress = TRUE</code> and use the <strong>progressr</strong> package
 instead.</p>
 <h3>BiocParallel::bplapply() - parallel lapply()</h3>
@@ -281,7 +281,7 @@ results of the futures.  For instance, if <code>future_lapply(X, FUN)</code>
 chunks up the processing of, say, 100 elements in <code>X</code> into eight
 futures, we will see progress from each of the 100 elements as they
 are done when using a future backend supporting &quot;near-live&quot; updates,
-whereas we will only see those updated to be flushed eight times when
+whereas we will only see those updates flushed eight times when
 using any other types of future backends.</p>
 <p>(*) Other future backends may gain support for &quot;near-live&quot; progress
 updating later.  Adding support for those is independent of the
