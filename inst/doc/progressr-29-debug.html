@@ -80,10 +80,9 @@ framework. Sometimes these <code>progression</code> conditions are not signaled,
 or transmitted, as expected. To troubleshoot such problems, we can use
 the built-in &quot;debug&quot; handler. For example,</p>
 <pre><code class="language-r">&gt; library(progressr)
-&gt; handlers(&quot;debug&quot;)
-&gt; handlers(global = TRUE)
+&gt; handlers(&quot;debug&quot;, global = TRUE)
 &gt; 
-&gt; y &lt;- slow_sum(1:3)
+&gt; y &lt;- slow_sum_p(1:3)
 [21:17:01.786] (0.000s =&gt; +0.015s) initiate: 0/3 (+0) '' {clear=TRUE, enabled=TRUE, status=}
 [21:17:01.975] (0.189s =&gt; +0.179s) update: 0/3 (+0) '' {clear=TRUE, enabled=TRUE, status=}
 [21:17:02.378] (0.593s =&gt; +0.002s) update: 0/3 (+0) '' {clear=TRUE, enabled=TRUE, status=}

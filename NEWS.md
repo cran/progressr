@@ -1,3 +1,25 @@
+# Version 1.0.0 [2026-07-03]
+
+## Significant Changes
+
+ * Changed the package license to permissive Apache License (>= 2).
+
+## New Features
+
+ * Add `handler_tutorial()` useful for benchmarking and illustrating
+   sequential and parallel processing, e.g. `handlers("tutorial")` and
+   `handlers("tutorial", "newline")`.
+
+ * `handler_cli()` gained argument `type` to choose from a predefined
+   set of `cli::cli_progress_bar()` `format` strings.
+
+ * `handler_progress()` gained argument `type` to choose from a
+   predefined set of `progress::progress_bar()` `format` strings.
+
+ * Renamed `slow_sum()` to `slow_sum_p()` and added `slow_sqrt_p()`.
+   Added new basic `slow_sum()` and `slow_sqrt()`.
+
+
 # Version 0.19.0 [2026-03-18]
 
 ## New Features
@@ -6,10 +28,7 @@
    handlers and enabling the global progression handler in one
    call, e.g. `handlers("beepr", "cli", global = TRUE)`.
 
- * Added `handler_brrr()` for reporting progress via rap ad-libs
-   (audio) using the **BRRR** package.
-
-## Peformance
+## Performance
 
  * `handler_cli()` no longer forces a display update after every
    tick, instead relying on **cli** itself to decide how often to
@@ -23,7 +42,6 @@
    invisible in the terminal. Now buffered stdout is only flushed up
    until the last newline, keeping the remaining output buffered until
    it is safe to flush.
-
 
 ## Deprecated and Defunct
 
@@ -248,7 +266,7 @@
    disables the global progress handler temporarily while running.
 
  * The `pbmclapply()` handler went from 0 to 100% in one step, because
-   we forgot to set the `max`:imum value.
+   we forgot to set the maximum value.
  
 
 # Version 0.11.0 [2022-09-02]

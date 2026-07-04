@@ -94,9 +94,8 @@ infile &lt;- system.file(&quot;examples&quot;, &quot;knitr-minimal.Rnw&quot;, pa
 outfile &lt;- knitr::knit(infile)
 </code></pre>
 <p>To customize the progress bar, try for instance:</p>
-<pre><code class="language-r">progressr::handlers(global = TRUE)
-options(crayon.enabled = TRUE)  ## force use of colors
-progressr::handlers(&quot;pbcol&quot;)
+<pre><code class="language-r">options(crayon.enabled = TRUE)  ## force use of colors
+progressr::handlers(&quot;pbcol&quot;, global = TRUE)
 </code></pre>
 <p>This will produce a colored progress bar in the terminal.</p>
 <p><em>Comment:</em> If the above knit example completes too quickly for you to

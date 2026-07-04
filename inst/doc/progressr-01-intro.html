@@ -131,22 +131,23 @@ p("loading ...")  # pass on a message
 <pre>
 handlers(global = TRUE)
 
-y &lt;- slow_sum(1:5)
-y &lt;- slow_sum(6:10)
+y &lt;- slow_sum_p(1:5)
+y &lt;- slow_sum_p(6:10)
 </pre>
 <p>
 1b. Subscribe to a specific expression:
 </p>
 <pre>
 with_progress({
-  y &lt;- slow_sum(1:5)
-  y &lt;- slow_sum(6:10)
+  y &lt;- slow_sum_p(1:5)
+  y &lt;- slow_sum_p(6:10)
 })
 </pre>
 <p>
 2. Configure how progress is presented:
 </p>
 <pre>
+handlers("cli")
 handlers("progress")
 handlers("txtprogressbar", "beepr")
 handlers(handler_pbcol(enable_after = 3.0))
@@ -157,11 +158,11 @@ handlers(handler_progress(complete = "#"))
 </div>
 </div>
 <h2>A simple example</h2>
-<p>Assume that we have a function <code>slow_sum()</code> for adding up the values
+<p>Assume that we have a function <code>slow_sum_p()</code> for adding up the values
 in a vector.  It is so slow, that we like to provide progress updates
 to whoever might be interested in it.  With the <strong>progressr</strong> package,
 this can be done as:</p>
-<pre><code class="language-r">slow_sum &lt;- function(x) {
+<pre><code class="language-r">slow_sum_p &lt;- function(x) {
   p &lt;- progressr::progressor(along = x)
   sum &lt;- 0
   for (kk in seq_along(x)) {
@@ -184,7 +185,7 @@ and, importantly, might not even be possible for end users to do
 (e.g. they call a package function that in turn calls the progress
 reporting function of interest).</p>
 <p>Now, if we call this function, without further settings:</p>
-<pre><code class="language-r">&gt; y &lt;- slow_sum(1:10)
+<pre><code class="language-r">&gt; y &lt;- slow_sum_p(1:10)
 &gt; y
 [1] 55
 &gt;
@@ -195,9 +196,9 @@ by:</p>
 <pre><code class="language-r">&gt; progressr::handlers(global = TRUE)
 </code></pre>
 <p>After this, progress will be reported:</p>
-<pre><code class="language-r">&gt; y &lt;- slow_sum(1:10)
+<pre><code class="language-r">&gt; y &lt;- slow_sum_p(1:10)
   |====================                               |  40%
-&gt; y &lt;- slow_sum(10:1)
+&gt; y &lt;- slow_sum_p(10:1)
   |========================================           |  80%
 </code></pre>
 <p>To disable reporting again, do:</p>
@@ -217,32 +218,32 @@ notification systems. You can also use a mix of these, e.g.</p>
 <h2>Additional Features</h2>
 <h3>Support for progressr elsewhere</h3>
 <p>Note that progression updates by <strong>progressr</strong> are designed to work out
-of the box for any iterator framework in R. See the different package
-vignettes for details. Prominent examples are:</p>
+of the box for any iterator framework in R. Prominent examples are:</p>
 <ul>
 <li><code>lapply()</code> etc. in base R</li>
 <li><code>map()</code> etc. by the <strong><a href="https://cran.r-project.org/package=purrr">purrr</a></strong> package</li>
 <li><code>llply()</code> etc. by the <strong><a href="https://cran.r-project.org/package=plyr">plyr</a></strong> package</li>
 <li><code>foreach()</code> iterations by the <strong><a href="https://cran.r-project.org/package=foreach">foreach</a></strong> package</li>
 </ul>
-<p>and near-live progress reporting in parallel and distributed
-processing via the <strong><a href="https://future.futureverse.org">future</a></strong> framework. The modern approach is to
-use the <strong><a href="https://futurize.futureverse.org">futurize</a></strong> package, e.g.</p>
+<p>You can manually inject <code>progressor()</code> code in these calls, or let the
+<strong><a href="https://progressify.futureverse.org">progressify</a></strong> package take care of it for you, e.g.</p>
 <ul>
-<li><code>lapply(...) |&gt; futurize()</code></li>
-<li><code>map(...) |&gt; futurize()</code> (<strong><a href="https://cran.r-project.org/package=purrr">purrr</a></strong>)</li>
-<li><code>llply(...) |&gt; futurize()</code> (<strong><a href="https://cran.r-project.org/package=plyr">plyr</a></strong>)</li>
-<li><code>foreach(...) |&gt; futurize()</code> (<strong><a href="https://cran.r-project.org/package=foreach">foreach</a></strong>)</li>
-<li><code>bplapply(...) |&gt; futurize()</code> (<strong><a href="https://www.bioconductor.org/packages/BiocParallel/">BiocParallel</a></strong>)</li>
+<li><code>lapply(...) |&gt; progressify()</code></li>
+<li><code>map(...) |&gt; progressify()</code></li>
+<li><code>llply(...) |&gt; progressify()</code></li>
+<li><code>foreach(...) |&gt; progressify()</code></li>
 </ul>
-<p>The traditional counterparts are:</p>
+<p>You can use this to obtain near-live progress reporting in parallel
+and distributed processing via the <strong><a href="https://future.futureverse.org">future</a></strong> framework. The modern
+approach is to combine <strong><a href="https://progressify.futureverse.org">progressify</a></strong> and <strong><a href="https://futurize.futureverse.org">futurize</a></strong>, e.g.</p>
 <ul>
-<li><code>future_lapply()</code> etc.  by the <strong><a href="https://future.apply.futureverse.org">future.apply</a></strong> package</li>
-<li><code>future_map()</code> etc. by the <strong><a href="https://furrr.futureverse.org">furrr</a></strong> package</li>
-<li><code>llply()</code> etc. by the <strong><a href="https://cran.r-project.org/package=plyr">plyr</a></strong> and <strong><a href="https://doFuture.futureverse.org">doFuture</a></strong> packages</li>
-<li><code>foreach()</code> iterations via the <strong>foreach</strong> and <strong><a href="https://doFuture.futureverse.org">doFuture</a></strong> packages</li>
-<li><code>bplapply()</code> etc. by the <strong><a href="https://www.bioconductor.org/packages/BiocParallel/">BiocParallel</a></strong> and <strong><a href="https://doFuture.futureverse.org">doFuture</a></strong> packages</li>
+<li><code>lapply(...) |&gt; progressify() |&gt; futurize()</code></li>
+<li><code>map(...) |&gt; progressify() |&gt; futurize()</code></li>
+<li><code>llply(...) |&gt; progressify() |&gt; futurize()</code></li>
+<li><code>foreach(...) |&gt; progressify() |&gt; futurize()</code></li>
+<li><code>bplapply(...) |&gt; progressify() |&gt; futurize()</code> (<strong><a href="https://www.bioconductor.org/packages/BiocParallel/">BiocParallel</a></strong>)</li>
 </ul>
+<p>You can also use <code>progressify()</code> with traditional <strong><a href="https://future.apply.futureverse.org">future.apply</a></strong>, <strong><a href="https://furrr.futureverse.org">furrr</a></strong> and <strong><a href="https://doFuture.futureverse.org">doFuture</a></strong> packages.</p>
 <p>Other uses of <strong>progressr</strong> are:</p>
 <ul>
 <li>make packages that report progress via the <strong><a href="https://cran.r-project.org/package=cli">cli</a></strong> package
@@ -253,7 +254,7 @@ use the <strong><a href="https://futurize.futureverse.org">futurize</a></strong>
 <p>In contrast to other progress-bar frameworks, output from <code>message()</code>,
 <code>cat()</code>, <code>print()</code> and so on will <em>not</em> interfere with progress
 reported via <strong>progressr</strong>.  For example, say we have:</p>
-<pre><code class="language-r">slow_sqrt &lt;- function(xs) {
+<pre><code class="language-r">slow_sqrt_p &lt;- function(xs) {
   p &lt;- progressor(along = xs)
   lapply(xs, function(x) {
     message(&quot;Calculating the square root of &quot;, x)
@@ -265,9 +266,8 @@ reported via <strong>progressr</strong>.  For example, say we have:</p>
 </code></pre>
 <p>we will get:</p>
 <pre><code class="language-r">&gt; library(progressr)
-&gt; handlers(global = TRUE)
-&gt; handlers(&quot;progress&quot;)
-&gt; y &lt;- slow_sqrt(1:8)
+&gt; handlers(&quot;progress&quot;, global = TRUE)
+&gt; y &lt;- slow_sqrt_p(1:8)
 Calculating the square root of 1
 Calculating the square root of 2
 - [===========&gt;-----------------------------------]  25% x=2
@@ -293,7 +293,7 @@ the message up together with other terminal output.  This can be done
 by adding class attribute <code>&quot;sticky&quot;</code> to the progression signaled.
 This works for several progress handlers that output to the terminal.
 For example, with:</p>
-<pre><code class="language-r">slow_sum &lt;- function(x) {
+<pre><code class="language-r">slow_sum_p &lt;- function(x) {
   p &lt;- progressr::progressor(along = x)
   sum &lt;- 0
   for (kk in seq_along(x)) {
@@ -307,14 +307,14 @@ For example, with:</p>
 </code></pre>
 <p>we get</p>
 <pre><code class="language-r">&gt; handlers(&quot;txtprogressbar&quot;)
-&gt; y &lt;- slow_sum(1:30)
+&gt; y &lt;- slow_sum_p(1:30)
 Step 5
 Step 10
   |====================                               |  43%
 </code></pre>
 <p>and</p>
 <pre><code class="language-r">&gt; handlers(&quot;progress&quot;)
-&gt; y &lt;- slow_sum(1:30)
+&gt; y &lt;- slow_sum_p(1:30)
 Step 5
 Step 10
 / [===============&gt;-------------------------]  43% Adding 13
